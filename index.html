@@ -1,640 +1,429 @@
 <!DOCTYPE html>
-<html lang="bn">
+<html lang="bn" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>All Tasks - Fworker</title>
+    <title>Fworker ডেইলি টাস্ক</title>
     <!-- Font Awesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
     
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
         @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap');
 
-        /* Color Palette & Design System */
         :root {
-            --primary-color: #7A28CB;
-            --secondary-color: #9D4EDD;
-            --background-body: #F4F0F9;
-            --text-dark: #3C1361;
-            --text-light: #6c757d;
+            --primary-color: #7B1FA2; /* Jam Color */
+            --light-primary: #EDE7F6; /* Light Purple */
+            --background-body: #F3E5F5; /* Lighter Purple Background */
             --card-bg: #ffffff;
-            --border-color: #E9D8F8;
-            --success-color: #28a745;
-            --info-color: #17a2b8; /* For Notice Icon */
-            --premium-color: #ffc107; /* Gold for premium */
-            --standard-color: #17a2b8; /* Teal for standard */
-            --gradient-primary: linear-gradient(45deg, var(--secondary-color), var(--primary-color));
-            --shadow-soft: 0 4px 12px rgba(0, 0, 0, 0.08);
-            --shadow-strong: 0 6px 20px rgba(122, 40, 203, 0.25);
+            --text-dark: #424242;
+            --text-light: #757575;
+            --border-color: #E1BEE7; /* Purple Border */
+            --shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+            --online-color: #4CAF50; /* Green for online */
+            --online-dot-size: 8px;
+        }
+
+        [data-theme="dark"] {
+            --primary-color: #BA68C8; /* Lighter Jam for Dark */
+            --light-primary: #4A148C; /* Darker Purple */
+            --background-body: #212121;
+            --card-bg: #303030;
+            --text-dark: #E0E0E0;
+            --text-light: #BDBDBD;
+            --border-color: #6A1B9A;
         }
         
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
         body {
-            font-family: 'Hind Siliguri', sans-serif;
+            font-family: 'Hind Siliguri', 'Poppins', sans-serif;
             background: var(--background-body);
-            color: var(--text-dark);
-            line-height: 1.6;
-        }
-
-        .mobile-container {
-            max-width: 480px;
-            margin: 0 auto;
-            background: var(--background-body);
+            display: flex;
+            justify-content: center;
+            align-items: center;
             min-height: 100vh;
-            box-shadow: 0 0 30px rgba(0,0,0,0.1);
         }
-
-        header {
-            background: var(--gradient-primary);
-            padding: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            color: white;
-            border-bottom-left-radius: 24px;
-            border-bottom-right-radius: 24px;
-            box-shadow: var(--shadow-strong);
-        }
-
-        header h1 { font-size: 22px; display: flex; align-items: center; gap: 10px; }
-        .header-actions { display: flex; gap: 10px; }
-        #history-btn, #notice-btn {
-            background: rgba(255, 255, 255, 0.2);
-            border: none;
-            font-size: 18px;
-            color: white;
-            cursor: pointer;
-            width: 44px; height: 44px;
-            border-radius: 50%;
-            transition: background 0.3s, transform 0.3s;
-        }
-        #history-btn:hover, #notice-btn:hover { background: rgba(255, 255, 255, 0.3); transform: scale(1.1); }
         
-        .task-nav {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            padding: 20px 15px;
+        .mobile-container {
+            width: 375px; height: 812px; border-radius: 40px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2); position: relative;
+            background-color: var(--card-bg); overflow: hidden;
+            display: flex; flex-direction: column;
         }
-        .nav-btn {
-            background-color: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 12px 5px;
-            font-size: 13px;
-            font-weight: 600;
-            color: var(--text-light);
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 8px;
+
+        .header {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 15px 20px; min-height: 70px; background: var(--light-primary);
+            border-bottom: 1px solid var(--border-color);
+            flex-shrink: 0;
         }
-        .nav-btn i { font-size: 20px; color: var(--secondary-color); transition: color 0.3s ease; }
-        .nav-btn:not(.active):hover {
-            transform: translateY(-3px);
-            box-shadow: var(--shadow-soft);
+        .header .title {
+            font-size: 18px; font-weight: 600; color: var(--primary-color);
+            text-align: center; flex-grow: 1;
+        }
+        .header .back-btn {
+            font-size: 24px; color: var(--primary-color); cursor: pointer;
+        }
+        .header .notification-icon {
+            font-size: 24px; color: var(--primary-color); cursor: pointer;
+        }
+
+        /* Main Content Body */
+        .main-content {
+            flex-grow: 1; overflow-y: auto; padding: 20px;
+            display: flex; flex-direction: column;
+            gap: 15px; background: var(--background-body);
+        }
+        .main-content::-webkit-scrollbar { display: none; }
+
+        .task-section {
+            background: var(--card-bg); padding: 20px; border-radius: 15px;
+            box-shadow: var(--shadow); border: 1px solid var(--border-color);
+        }
+        .task-section .section-title {
+            font-size: 18px; font-weight: 700; color: var(--primary-color);
+            margin-bottom: 10px; text-align: center;
+        }
+        .task-section .task-description {
+            font-size: 14px; line-height: 1.6; color: var(--text-dark);
+            margin-bottom: 15px;
+        }
+        .task-section .task-details {
+            margin-bottom: 15px;
+            padding: 10px;
+            background-color: var(--light-primary);
+            border-radius: 10px;
+            border: 1px dashed var(--primary-color);
+        }
+        .task-section .task-details p {
+            font-size: 14px; color: var(--text-dark); margin-bottom: 5px;
+        }
+        .task-section .task-details strong {
             color: var(--primary-color);
         }
-        .nav-btn.active {
-            background: var(--gradient-primary);
+
+        .admin-contact-btn {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            background-color: #25D366; /* WhatsApp Green */
             color: white;
-            border-color: var(--primary-color);
-            transform: translateY(-5px);
-            box-shadow: var(--shadow-strong);
+            text-align: center;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 15px;
+            transition: background-color 0.3s ease;
+            margin-top: 20px;
         }
-        .nav-btn.active i { color: white; }
+        .admin-contact-btn:hover {
+            background-color: #1DA851;
+        }
+        .admin-contact-btn i {
+            margin-right: 8px;
+        }
 
-        .task-content { padding: 0 15px 20px; }
-        .task-list { display: none; }
-        .task-list.active { display: block; animation: fadeIn 0.5s; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        .notice-board {
-            background: var(--card-bg);
+        .task-demo {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid var(--border-color);
+        }
+        .task-demo h4 {
+            font-size: 16px; font-weight: 600; color: var(--text-dark);
+            margin-bottom: 10px;
+        }
+        .task-demo .demo-images {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+        .task-demo .demo-images img {
+            width: 100px; height: 100px;
+            object-fit: cover;
+            border-radius: 8px;
             border: 1px solid var(--border-color);
-            border-left: 5px solid var(--primary-color);
-            padding: 20px;
-            margin-bottom: 25px;
-            border-radius: 12px;
-            box-shadow: var(--shadow-soft);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Task Submission Form */
+        .submission-form {
+            background: var(--card-bg); padding: 20px; border-radius: 15px;
+            box-shadow: var(--shadow); border: 1px solid var(--border-color);
+            margin-top: 20px;
+        }
+        .submission-form .form-title {
+            font-size: 18px; font-weight: 700; color: var(--primary-color);
+            margin-bottom: 15px; text-align: center;
+        }
+        .submission-form .form-group {
+            margin-bottom: 15px;
+        }
+        .submission-form label {
+            display: block; font-size: 13px; color: var(--text-dark);
+            margin-bottom: 5px; font-weight: 500;
+        }
+        .submission-form input[type="text"],
+        .submission-form input[type="email"],
+        .submission-form input[type="number"] {
+            width: 100%; padding: 10px 12px; border: 1px solid var(--border-color);
+            border-radius: 8px; font-size: 14px; color: var(--text-dark);
+            background-color: var(--background-body);
+        }
+        .submission-form input:focus {
+            outline: none; border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(123, 31, 162, 0.1);
+        }
+        .submission-form .form-buttons {
+            display: flex; justify-content: space-between; gap: 10px;
+            margin-top: 20px;
+        }
+        .submission-form .form-buttons button {
+            flex-grow: 1; padding: 12px; border: none; border-radius: 25px;
+            font-size: 15px; font-weight: 600; cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        .submission-form .form-buttons #preview-btn {
+            background: var(--light-primary); color: var(--primary-color);
+            border: 1px solid var(--primary-color);
+        }
+        .submission-form .form-buttons #preview-btn:hover {
+            background: var(--primary-color); color: white;
+        }
+        .submission-form .form-buttons #copy-submit-btn {
+            background: var(--primary-color); color: white;
+        }
+        .submission-form .form-buttons #copy-submit-btn:hover {
+            background: #9C27B0;
+        }
+
+        .submission-preview {
+            background: var(--background-body); padding: 15px; border-radius: 10px;
+            border: 1px dashed var(--primary-color); margin-top: 20px;
+            font-size: 14px; color: var(--text-dark); line-height: 1.6;
+            white-space: pre-wrap; /* Preserve whitespace and line breaks */
+            display: none; /* Hidden by default */
+        }
+        .submission-preview strong { color: var(--primary-color); }
+
+        /* Notification Modal */
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 100; /* Sit on top */
+            left: 0; top: 0; width: 100%; height: 100%;
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgba(0,0,0,0.5); /* Black w/ opacity */
+            justify-content: center; align-items: center;
+        }
+        .modal-content {
+            background-color: var(--card-bg);
+            margin: auto;
+            padding: 25px;
+            border: 1px solid var(--border-color);
+            width: 85%;
+            max-width: 350px;
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+            position: relative;
+        }
+        .modal-content .close-button {
+            color: var(--text-light);
+            position: absolute;
+            top: 10px; right: 15px;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .modal-content h3 {
+            font-size: 20px; color: var(--primary-color); margin-bottom: 15px;
             text-align: center;
         }
-        .notice-board h3 {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            font-size: 18px;
-            color: var(--primary-color);
+        .modal-content p {
+            font-size: 14px; line-height: 1.6; color: var(--text-dark);
             margin-bottom: 10px;
         }
-        .notice-board p { font-size: 14px; color: var(--text-light); }
-        
-        .join-group-btn {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            background: var(--gradient-primary);
-            color: white;
-            padding: 15px;
-            margin: 0 0 25px;
-            border-radius: 12px;
-            font-size: 16px;
-            font-weight: 600;
-            text-decoration: none;
-            box-shadow: var(--shadow-strong);
-            transition: all 0.3s ease;
-            animation: pulse 2s infinite;
-        }
-        .join-group-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(122, 40, 203, 0.35);
-            animation-play-state: paused;
-        }
-        .join-group-btn i { font-size: 20px; }
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.03); }
-            100% { transform: scale(1); }
-        }
-
-        .task-package-card {
-            background: var(--card-bg);
-            border-radius: 15px;
-            box-shadow: var(--shadow-soft);
-            margin-bottom: 25px;
-            overflow: hidden;
-            border: 1px solid var(--border-color);
-            border-left: 5px solid var(--secondary-color);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-        .task-package-card:hover {
-            transform: translateY(-5px);
-            box-shadow: var(--shadow-strong);
-        }
-        .task-package-card.standard { border-left-color: var(--standard-color); }
-        .task-package-card.premium { border-left-color: var(--premium-color); }
-
-        .package-header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: var(--background-body); }
-        .package-header h2 { font-size: 18px; display: flex; align-items: center; gap: 10px; }
-        .package-price { background: var(--gradient-primary); color: white; font-weight: 700; padding: 6px 15px; border-radius: 20px; font-size: 16px; }
-        .package-body { padding: 20px; }
-        .package-section { margin-bottom: 20px; }
-        .package-section h4 { font-size: 16px; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; gap: 8px; color: var(--primary-color); }
-        .package-section ul { list-style: none; padding-left: 5px; }
-        .package-section ul li { margin-bottom: 8px; font-size: 14px; color: var(--text-light); display: flex; align-items: flex-start; gap: 10px; }
-        .package-section ul li i { color: var(--success-color); margin-top: 4px; }
-        .task-action-btn { width: 100%; background: var(--gradient-primary); color: white; padding: 14px; border: none; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; box-shadow: var(--shadow-strong); margin-top: 10px; display: flex; align-items: center; justify-content: center; gap: 8px; }
-        .task-action-btn:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(122, 40, 203, 0.35); }
-        .task-action-btn:disabled { background: #ccc; cursor: not-allowed; box-shadow: none; }
-        
-        /* Modal Styles */
-        .modal-backdrop { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 200; display: none; opacity: 0; transition: opacity 0.3s ease; }
-        .modal-backdrop.show { display: block; opacity: 1; }
-        .modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.9); background: var(--card-bg); border-radius: 15px; width: 90%; max-width: 400px; z-index: 201; display: none; opacity: 0; transition: opacity 0.3s ease, transform 0.3s ease; }
-        .modal.show { display: block; opacity: 1; transform: translate(-50%, -50%) scale(1); }
-        .modal-header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; border-bottom: 1px solid var(--border-color); }
-        .modal-header h3 { font-size: 18px; display: flex; align-items: center; gap: 10px;}
-        .modal-close-btn { background: none; border: none; font-size: 24px; cursor: pointer; color: var(--text-light); }
-        .modal-body { padding: 20px; max-height: 70vh; overflow-y: auto; }
-        .form-group label { display: block; margin-bottom: 8px; font-weight: 500; }
-        .form-group input, .form-group textarea { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 15px; font-family: 'Hind Siliguri', sans-serif; font-size: 14px; }
-        #history-list { list-style: none; }
-        #history-list li { background: var(--background-body); padding: 15px; border-radius: 10px; margin-bottom: 10px; border-left: 4px solid var(--primary-color); }
-        #history-list .history-title { font-weight: 600; display: block; margin-bottom: 5px; }
-        #history-list .history-details { font-size: 13px; color: var(--text-light); display: flex; justify-content: space-between; }
-        
-        /* Notice Modal Specific Styles */
-        .notice-modal-section { margin-bottom: 25px; }
-        .notice-modal-section h4 {
-            color: var(--primary-color);
-            font-size: 16px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+        .modal-content ul {
+            list-style: disc; margin-left: 20px; color: var(--text-dark);
             margin-bottom: 10px;
-            padding-bottom: 5px;
-            border-bottom: 1px dashed var(--border-color);
         }
-        .notice-modal-section p, .notice-modal-section li {
-            font-size: 14px;
-            color: var(--text-dark);
-            margin-bottom: 8px;
-            line-height: 1.7;
+        .modal-content ul li {
+            margin-bottom: 5px;
         }
-        .notice-modal-section ul { list-style-type: '✅ '; padding-left: 20px; }
-
-        /* Floating Support Button */
-        #support-fab {
-            position: fixed;
-            bottom: 25px;
-            right: 25px;
-            background-color: var(--success-color);
-            color: white;
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 28px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            z-index: 100;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            text-decoration: none;
-        }
-        #support-fab:hover {
-            transform: scale(1.1) rotate(10deg);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
-        }
-
     </style>
 </head>
 <body>
-
     <div class="mobile-container">
-        <header>
-            <h1><i class="fas fa-tasks"></i> All Tasks</h1>
-            <div class="header-actions">
-                <button id="notice-btn" title="কাজের নিয়মাবলী"><i class="fas fa-info-circle"></i></button>
-                <button id="history-btn" title="কাজের হিস্টরি"><i class="fas fa-history"></i></button>
-            </div>
+        <header class="header">
+            <i class="fas fa-arrow-left back-btn"></i>
+            <span class="title">Fworker ডেইলি টাস্ক</span>
+            <i class="fas fa-bell notification-icon" id="notification-btn"></i>
         </header>
+        
+        <main class="main-content">
+            <div class="task-section">
+                <h3 class="section-title">কাজের ডিটেলস</h3>
+                <p class="task-description">
+                    প্রতিদিন আপনি একটি করে নতুন কাজ পাবেন। যে কাজগুলো আপনার ভালো লাগবে, সেগুলো আপনি করতে পারবেন। আজ কাজ শেষ করলে আপনার অ্যাকাউন্টে টাকা যোগ হয়ে যাবে, এবং আগামীকাল আপনি আবার নতুন একটি কাজ পাবেন।
+                </p>
 
-        <main>
-            <div class="task-nav">
-                <button class="nav-btn active" data-target="daily-tasks"><i class="fab fa-facebook-f"></i> ফেসবুক টাস্ক</button>
-                <button class="nav-btn" data-target="website-visits"><i class="fas fa-globe"></i> ওয়েবসাইট ভিজিট</button>
-                <button class="nav-btn" data-target="watch-ads"><i class="fas fa-video"></i> অ্যাড দেখে ইনকাম</button>
-            </div>
-
-            <div class="task-content">
-                <!-- Daily Tasks -->
-                <div id="daily-tasks" class="task-list active">
-                    
-                    <div class="notice-board">
-                        <h3><i class="fas fa-bullhorn"></i> জরুরি নোটিশ</h3>
-                        <p>আপনি প্রতিদিন (২৪ ঘণ্টায়) শুধুমাত্র একটি প্যাকেজের কাজ করতে পারবেন। আজ একটি প্যাকেজ সম্পন্ন করলে, পরেরটি আগামী দিন করতে পারবেন।
-                        ⭐ আপনার যদি আমাদের ওয়েবসাইট অ্যাকাউন্ট না থাকে তাহলে কাজ জমা দেওয়ার সময় সেখানে ইমেল না দিয়ে আপনার হোয়াটসঅ্যাপ নাম্বার দিলে হবে,
-                        ⭐ কাজ করার আগে অবশ্যই হিস্টোরি আইকন এর সাথে নোটিশ আইকনে ক্লিক করে আমাদের নোটিসটা পড়ে নিবেন</p>
-                    </div>
-
-                    <a href="https://chat.whatsapp.com/Ba6tBf6h0ShIrZsSdUZrur?mode=ac_t" target="_blank" class="join-group-btn">
-                        <i class="fab fa-whatsapp"></i>
-                        কাজের নিয়ম ও টেক্সট পেতে গ্রুপে যোগ দিন
-                    </a>
-
-                    <!-- Package 1: Basic -->
-                    <div class="task-package-card basic">
-                        <div class="package-header">
-                            <h2><i class="fas fa-layer-group"></i> Basic Task</h2>
-                            <span class="package-price">৳২০</span>
-                        </div>
-                        <div class="package-body">
-                            <div class="package-section">
-                                <h4><i class="fas fa-clipboard-list"></i> কাজের নিয়ম</h4>
-                                <ul>
-                                    <li><i class="fas fa-check"></i> <strong>২৫টি</strong> ফেসবুক গ্রুপে পোস্ট করতে হবে।</li>
-                                    <li><i class="fas fa-check"></i> প্রতিটি পোস্টের নিচে একটি নির্দিষ্ট লিংক কমেন্ট করতে হবে।</li>
-                                    <li><i class="fas fa-check"></i> লিংকের সাথে অ্যাডমিনের দেওয়া লেখা যুক্ত করতে হবে।</li>
-                                </ul>
-                            </div>
-                            <div class="package-section">
-                                <h4><i class="fas fa-file-alt"></i> কাজের টেক্সট ও লিংক</h4>
-                                <ul>
-                                    <li><i class="fas fa-hand-pointer"></i> আপনাকে আমাদের অফিশিয়াল গ্রুপ বা অ্যাডমিন থেকে কাজের টেক্সট ও লিংক সংগ্রহ করতে হবে।</li>
-                                </ul>
-                            </div>
-                            <div class="package-section">
-                                <h4><i class="fas fa-users"></i> কোথায় পোস্ট করবেন</h4>
-                                <ul>
-                                    <li><i class="fas fa-bullseye"></i> শুধু অনলাইন ইনকাম, ফ্রিল্যান্সিং, জব, আর্নিং সম্পর্কিত গ্রুপে পোস্ট করতে হবে।</li>
-                                </ul>
-                            </div>
-                            <button class="task-action-btn submit-btn" data-task-title="ফেসবুক টাস্ক - Basic" data-task-reward="20"><i class="fas fa-paper-plane"></i> কাজটি জমা দিন</button>
-                        </div>
-                    </div>
-
-                    <!-- Package 2: Standard -->
-                    <div class="task-package-card standard">
-                        <div class="package-header">
-                            <h2><i class="fas fa-star"></i> Standard Task</h2>
-                            <span class="package-price">৳৩০</span>
-                        </div>
-                        <div class="package-body">
-                            <div class="package-section">
-                                <h4><i class="fas fa-clipboard-list"></i> কাজের নিয়ম</h4>
-                                <ul>
-                                    <li><i class="fas fa-check"></i> <strong>৩৫টি</strong> ফেসবুক গ্রুপে পোস্ট করতে হবে।</li>
-                                    <li><i class="fas fa-check"></i> প্রতিটি পোস্টের নিচে লিংক ও লেখা কমেন্ট করতে হবে।</li>
-                                    <li><i class="fas fa-check"></i> কাজ শেষে প্রমাণের জন্য স্ক্রিনশট জমা দিতে হবে।</li>
-                                </ul>
-                            </div>
-                            <div class="package-section">
-                                <h4><i class="fas fa-robot"></i> কাজের টেক্সট ও লিংক</h4>
-                                <ul>
-                                    <li><i class="fas fa-hand-pointer"></i> প্রতিটি টেক্সট ও লিংক আমাদের Bot অথবা অ্যাডমিন শেয়ার করবে।</li>
-                                </ul>
-                            </div>
-                             <div class="package-section">
-                                <h4><i class="fas fa-users"></i> কোথায় পোস্ট করবেন</h4>
-                                <ul>
-                                    <li><i class="fas fa-bullseye"></i> Earn Money, Work From Home, Job Posting, Freelancing Community গ্রুপে পোস্ট করতে হবে।</li>
-                                </ul>
-                            </div>
-                            <button class="task-action-btn submit-btn" data-task-title="ফেসবুক টাস্ক - Standard" data-task-reward="30"><i class="fas fa-paper-plane"></i> কাজটি জমা দিন</button>
-                        </div>
-                    </div>
-
-                    <!-- Package 3: Premium -->
-                    <div class="task-package-card premium">
-                        <div class="package-header">
-                            <h2><i class="fas fa-gem"></i> Premium Task</h2>
-                            <span class="package-price">৳৫০</span>
-                        </div>
-                        <div class="package-body">
-                            <div class="package-section">
-                                <h4><i class="fas fa-clipboard-list"></i> কাজের নিয়ম</h4>
-                                <ul>
-                                    <li><i class="fas fa-check"></i> <strong>৬০টি</strong> ফেসবুক গ্রুপে পোস্ট করতে হবে।</li>
-                                    <li><i class="fas fa-check"></i> প্রতিটি পোস্টের নিচে নির্দিষ্ট লিংক ও লেখা কমেন্ট করতে হবে।</li>
-                                    <li><i class="fas fa-check"></i> সব কাজ শেষে প্রমাণের জন্য স্ক্রিনশট জমা দিতে হবে।</li>
-                                </ul>
-                            </div>
-                            <div class="package-section">
-                                <h4><i class="fas fa-link"></i> কাজের টেক্সট ও লিংক</h4>
-                                <ul>
-                                    <li><i class="fas fa-hand-pointer"></i> আপনার রেফারেল লিংক এবং প্রোমো টেক্সট আপনাকে আলাদাভাবে দেওয়া হবে।</li>
-                                </ul>
-                            </div>
-                             <div class="package-section">
-                                <h4><i class="fas fa-users"></i> কোথায় পোস্ট করবেন</h4>
-                                <ul>
-                                    <li><i class="fas fa-bullseye"></i> শুধু অ্যাকটিভ গ্রুপ বেছে নিতে হবে, যেখানে প্রতিদিন ইনকাম বা ফ্রিল্যান্সিং নিয়ে আলোচনা হয়।</li>
-                                </ul>
-                            </div>
-                            <button class="task-action-btn submit-btn" data-task-title="ফেসবুক টাস্ক - Premium" data-task-reward="50"><i class="fas fa-paper-plane"></i> কাজটি জমা দিন</button>
-                        </div>
-                    </div>
+                <div class="task-details">
+                    <p>আজকের কাজ: <strong>কাজ নাম্বার ওয়ান (প্যাকেজ: গ্রুপ শেয়ার)</strong></p>
+                    <p>কাজের রেট: <strong>৳১০ টাকা</strong></p>
+                    <p>কাজের বিবরণ: সর্বোচ্চ <strong>২০টি পাবলিক গ্রুপে</strong> পোস্ট করতে হবে।</p>
+                    <p>স্ক্রিনশট: প্রতিটি পোস্ট আপলোড হওয়ার পর <strong>১টি করে স্ক্রিনশট</strong> নিতে হবে (মোট ২০টি)।</p>
                 </div>
 
-                <!-- Website Visits -->
-                <div id="website-visits" class="task-list">
-                    <p style="text-align:center; padding: 20px;">এই সেকশনে কোনো কাজ নেই।</p>
+                <p class="task-description">
+                    পোস্ট করার জন্য প্রয়োজনীয় ছবি ও লেখা (টেক্সট) এবং গ্রুপ লিংক পেতে এডমিনের সাথে যোগাযোগ করুন।
+                </p>
+                <a href="https://wa.me/8801614775866" target="_blank" class="admin-contact-btn">
+                    <i class="fab fa-whatsapp"></i> এডমিনের সাথে যোগাযোগ
+                </a>
+
+                <div class="task-demo">
+                    <h4>কাজের ডেমো স্ক্রিনশট:</h4>
+                    <div class="demo-images">
+                        <img src="https://i.ibb.co/L5YwY2X/demo-post-1.jpg" alt="Demo Screenshot 1">
+                        <img src="https://i.ibb.co/NKJ666S/demo-post-2.jpg" alt="Demo Screenshot 2">
+                        <img src="https://i.ibb.co/VMyh0G4/demo-post-3.jpg" alt="Demo Screenshot 3">
+                        <!-- Add more demo images as needed -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="submission-form">
+                <h3 class="form-title">কাজ জমা দেওয়ার ফর্ম</h3>
+                <div class="form-group">
+                    <label for="userName">আপনার নাম:</label>
+                    <input type="text" id="userName" placeholder="এখানে আপনার নাম লিখুন">
+                </div>
+                <div class="form-group">
+                    <label for="userEmailOrNumber">আপনার অ্যাকাউন্ট ইমেইল বা নাম্বার:</label>
+                    <input type="text" id="userEmailOrNumber" placeholder="আপনার ইমেইল অথবা নাম্বার লিখুন">
+                </div>
+                <div class="form-group">
+                    <label for="screenshotCount">জমা দেওয়া স্ক্রিনশট সংখ্যা (যেমন: ২০টি):</label>
+                    <input type="number" id="screenshotCount" value="20" min="1">
+                </div>
+                <div class="form-group">
+                    <label for="taskName">কাজের নাম (যেমন: কাজ নাম্বার ওয়ান - গ্রুপ শেয়ার):</label>
+                    <input type="text" id="taskName" value="কাজ নাম্বার ওয়ান - গ্রুপ শেয়ার">
                 </div>
                 
-                <!-- Watch Ads -->
-                <div id="watch-ads" class="task-list">
-                    <p style="text-align:center; padding: 20px;">এই সেকশনে কোনো কাজ নেই।</p>
+                <div class="form-buttons">
+                    <button id="preview-btn">প্রিভিউ দেখুন</button>
+                    <button id="copy-submit-btn"><i class="fas fa-copy"></i> কপি করুন ও জমা দিন</button>
                 </div>
+
+                <div class="submission-preview" id="submissionPreview"></div>
             </div>
         </main>
-    </div>
 
-    <!-- Floating Support Button -->
-    <a href="https://wa.me/8801614775866?text=Hello%20Admin,%20I%20need%20some%20help." target="_blank" id="support-fab" title="সাপোর্ট">
-        <i class="fab fa-whatsapp"></i>
-    </a>
-
-    <!-- Modals -->
-    <div class="modal-backdrop" id="submission-modal-backdrop"></div>
-    <div class="modal" id="submission-modal">
-        <div class="modal-header">
-            <h3 id="submission-modal-title">কাজ জমা দিন</h3>
-            <button class="modal-close-btn" data-target="submission-modal">&times;</button>
-        </div>
-        <div class="modal-body">
-            <form id="submission-form">
-                <input type="hidden" id="task-title-input" value="">
-                <input type="hidden" id="task-reward-input" value="">
-                <div class="form-group">
-                    <label for="user-id">আপনার অ্যাপ ইউজার আইডি/ইমেইল:</label>
-                    <input type="text" id="user-id" placeholder="এখানে আপনার আইডি বা ইমেইল লিখুন" required>
-                </div>
-                <div class="form-group">
-                    <label for="details">বিস্তারিত (ঐচ্ছিক):</label>
-                    <textarea id="details" placeholder="কাজ সম্পর্কে কিছু বলার থাকলে এখানে লিখুন" rows="3"></textarea>
-                </div>
-                <button type="submit" class="task-action-btn"><i class="fab fa-whatsapp"></i> WhatsApp এ পাঠান</button>
-            </form>
-        </div>
-    </div>
-    
-    <div class="modal-backdrop" id="history-modal-backdrop"></div>
-    <div class="modal" id="history-modal">
-        <div class="modal-header">
-            <h3><i class="fas fa-history"></i> কাজের হিস্টরি</h3>
-            <button class="modal-close-btn" data-target="history-modal">&times;</button>
-        </div>
-        <div class="modal-body">
-            <ul id="history-list"><p>আপনি এখনো কোনো কাজ জমা দেননি।</p></ul>
-        </div>
-    </div>
-
-    <div class="modal-backdrop" id="notice-modal-backdrop"></div>
-    <div class="modal" id="notice-modal">
-        <div class="modal-header">
-            <h3><i class="fas fa-info-circle"></i> কাজের নিয়মাবলী</h3>
-            <button class="modal-close-btn" data-target="notice-modal">&times;</button>
-        </div>
-        <div class="modal-body">
-            <div class="notice-modal-section">
-                <h4><i class="fas fa-tasks"></i> কাজ করার নিয়ম</h4>
-                <p>আমাদের দেওয়া ফেসবুক টাস্কগুলো সঠিকভাবে সম্পন্ন করতে নিচের নিয়মগুলো অনুসরণ করুন:</p>
+        <!-- Notification Modal -->
+        <div id="notificationModal" class="modal">
+            <div class="modal-content">
+                <span class="close-button">&times;</span>
+                <h3>নোটিশ: কাজ জমা দেওয়ার নিয়মাবলী</h3>
+                <p>কাজ জমা দেওয়ার জন্য নিচের ধাপগুলো অনুসরণ করুন:</p>
                 <ul>
-                    <li>প্রথমে আমাদের অফিসিয়াল WhatsApp গ্রুপে যোগ দিন। কাজের সকল টেক্সট, লিংক এবং আপডেট সেখানেই দেওয়া হবে।</li>
-                    <li>যে প্যাকেজের কাজটি করবেন, সেই অনুযায়ী নির্দিষ্ট সংখ্যক (যেমন: ২৫, ৩৫ বা ৬০টি) ফেসবুক গ্রুপে পোস্ট করুন।</li>
-                    <li>শুধুমাত্র অনলাইন ইনকাম, ফ্রিল্যান্সিং বা জব সম্পর্কিত অ্যাকটিভ গ্রুপে পোস্ট করতে হবে।</li>
-                    <li>পোস্ট করার পর, প্রতিটি পোস্টের কমেন্টে আমাদের দেওয়া নির্দিষ্ট লেখা ও লিংক যুক্ত করুন।</li>
+                    <li>সর্বপ্রথম উপরের ফর্মে আপনার তথ্যগুলো সঠিকভাবে পূরণ করুন।</li>
+                    <li>"প্রিভিউ দেখুন" বাটনে ক্লিক করে আপনার তথ্যগুলো যাচাই করে নিন।</li>
+                    <li>তারপর "কপি করুন ও জমা দিন" বাটনে ক্লিক করলে আপনার পূরণ করা তথ্য এবং একটি হোয়াটসঅ্যাপ লিংক কপি হবে।</li>
+                    <li>কপি হওয়ার পর সরাসরি আপনাকে হোয়াটসঅ্যাপে এডমিনের ইনবক্সে নিয়ে যাওয়া হবে।</li>
+                    <li>সেখানে প্রথমে কপি করা তথ্যগুলো পেস্ট করুন।</li>
+                    <li>এরপর, আপনি যে ২০টি গ্রুপের স্ক্রিনশট নিয়েছেন, সেগুলোকে সঠিক টাইমলাইন বা ধারাবাহিকতা অনুযায়ী এডমিনকে পাঠান।</li>
+                    <li>এডমিন আপনার কাজ যাচাই করে দ্রুত আপনার অ্যাকাউন্টে টাকা যোগ করে দেবেন।</li>
                 </ul>
-            </div>
-            <div class="notice-modal-section">
-                <h4><i class="fas fa-paper-plane"></i> কাজ জমা দেওয়ার নিয়ম</h4>
-                <p>কাজ শেষ করে প্রমাণ হিসেবে জমা দেওয়ার জন্য এই ধাপগুলো অনুসরণ করুন:</p>
-                <ul>
-                    <li>আপনি যে গ্রুপগুলোতে পোস্ট এবং কমেন্ট করেছেন, তার স্পষ্ট স্ক্রিনশট নিন।</li>
-                    <li>"কাজটি জমা দিন" বাটনে ক্লিক করুন।</li>
-                    <li>আপনার অ্যাপ ইউজার আইডি বা ইমেইল সঠিক ভাবে লিখুন।</li>
-                    <li>"WhatsApp এ পাঠান" বাটনে ক্লিক করলে আপনাকে সরাসরি অ্যাডমিনের ইনবক্সে নিয়ে যাবে।</li>
-                    <li>সেখানে আপনার স্ক্রিনশটগুলো পাঠিয়ে দিন।</li>
-                </ul>
-            </div>
-             <div class="notice-modal-section">
-                <h4><i class="fas fa-dollar-sign"></i> পেমেন্ট পাওয়ার নিয়ম</h4>
-                <p>সঠিকভাবে কাজ জমা দিলে আপনি পেমেন্ট পাবেন।</p>
-                <ul>
-                    <li>আপনার জমা দেওয়া কাজ অ্যাডমিন কর্তৃক রিভিউ করা হবে।</li>
-                    <li>কাজ সঠিক থাকলে ২৪ ঘণ্টার মধ্যে আপনার একাউন্টে টাকা যোগ হয়ে যাবে।</li>
-                    <li>আপনার একাউন্টে মিনিমাম উইথড্র পরিমাণ টাকা হলেই আপনি পেমেন্ট রিকোয়েস্ট করতে পারবেন।</li>
-                </ul>
-            </div>
-            <div class="notice-modal-section">
-                <h4><i class="fas fa-times-circle"></i> যেসব কারণে পেমেন্ট পাবেন না</h4>
-                <p>সতর্ক থাকুন! নিচের ভুলগুলো করলে আপনার কাজটি বাতিল হতে পারে:</p>
-                <ul>
-                    <li>ভুল বা অসম্পূর্ণ স্ক্রিনশট জমা দিলে।</li>
-                    <li>একই গ্রুপে একাধিকবার পোস্ট করলে।</li>
-                    <li>নিষিদ্ধ বা সম্পর্কহীন গ্রুপে পোস্ট করলে।</li>
-                    <li>ভুয়া বা এডিট করা প্রমাণ জমা দিলে আপনার অ্যাকাউন্ট ব্লক করা হতে পারে।</li>
-                </ul>
+                <p>কোনো সমস্যা হলে এডমিনের সাথে যোগাযোগ করুন।</p>
             </div>
         </div>
     </div>
 
     <script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const navButtons = document.querySelectorAll('.nav-btn');
-        const taskLists = document.querySelectorAll('.task-list');
-        const submitButtons = document.querySelectorAll('.submit-btn');
-        const modalBackdrops = document.querySelectorAll('.modal-backdrop');
-        const closeButtons = document.querySelectorAll('.modal-close-btn');
-        
-        // Modal elements
-        const submissionModal = document.getElementById('submission-modal');
-        const historyModal = document.getElementById('history-modal');
-        const noticeModal = document.getElementById('notice-modal');
+        document.addEventListener('DOMContentLoaded', () => {
+            const backBtn = document.querySelector('.back-btn');
+            const notificationBtn = document.getElementById('notification-btn');
+            const notificationModal = document.getElementById('notificationModal');
+            const closeModalBtn = document.querySelector('.modal .close-button');
+            const userNameInput = document.getElementById('userName');
+            const userEmailOrNumberInput = document.getElementById('userEmailOrNumber');
+            const screenshotCountInput = document.getElementById('screenshotCount');
+            const taskNameInput = document.getElementById('taskName');
+            const previewBtn = document.getElementById('preview-btn');
+            const copySubmitBtn = document.getElementById('copy-submit-btn');
+            const submissionPreview = document.getElementById('submissionPreview');
 
-        // Button elements
-        const historyBtn = document.getElementById('history-btn');
-        const noticeBtn = document.getElementById('notice-btn');
+            // Go back to the previous page (or support page if available)
+            backBtn.addEventListener('click', () => {
+                window.history.back(); // This will go back to the previous page in history
+                // Alternatively, you could redirect to 'support.html'
+                // window.location.href = 'support.html';
+            });
 
-        // Form elements
-        const submissionModalTitle = document.getElementById('submission-modal-title');
-        const submissionForm = document.getElementById('submission-form');
-        const historyList = document.getElementById('history-list');
+            // Open Notification Modal
+            notificationBtn.addEventListener('click', () => {
+                notificationModal.style.display = 'flex'; // Use flex to center
+            });
 
-        // Tab Navigation
-        navButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                navButtons.forEach(btn => btn.classList.remove('active'));
-                button.classList.add('active');
-                
-                const targetId = button.getAttribute('data-target');
-                taskLists.forEach(list => {
-                    list.classList.remove('active');
-                    if (list.id === targetId) {
-                        list.classList.add('active');
-                    }
+            // Close Notification Modal
+            closeModalBtn.addEventListener('click', () => {
+                notificationModal.style.display = 'none';
+            });
+
+            // Close modal if clicked outside
+            window.addEventListener('click', (event) => {
+                if (event.target === notificationModal) {
+                    notificationModal.style.display = 'none';
+                }
+            });
+
+            // Function to generate submission text
+            function generateSubmissionText() {
+                const userName = userNameInput.value.trim();
+                const userEmailOrNumber = userEmailOrNumberInput.value.trim();
+                const screenshotCount = screenshotCountInput.value.trim();
+                const taskName = taskNameInput.value.trim();
+                const adminWhatsAppNumber = '8801614775866'; // Hardcoded admin WhatsApp number
+
+                return `
+*Fworker ডেইলি টাস্ক জমা দিন*
+
+*আমার নাম:* ${userName || '[আপনার নাম]'}
+*আমার একাউন্ট ইমেইল/নাম্বার:* ${userEmailOrNumber || '[আপনার ইমেইল বা নাম্বার]'}
+*জমা দেওয়া স্ক্রিনশট সংখ্যা:* ${screenshotCount || '0'}টি
+*কাজের নাম:* ${taskName || '[কাজের নাম]'}
+
+*আমি উপরে উল্লেখিত কাজটি সম্পন্ন করেছি এবং এর স্ক্রিনশটগুলো নিচে জমা দিচ্ছি।*
+*আমার কাজটি যাচাই করে দ্রুত পেমেন্ট করার অনুরোধ করছি।*
+*ধন্যবাদ!*
+                `;
+            }
+
+            // Preview functionality
+            previewBtn.addEventListener('click', () => {
+                submissionPreview.innerHTML = generateSubmissionText().replace(/\*/g, '<strong>').replace(/\n/g, '<br>');
+                submissionPreview.style.display = 'block';
+            });
+
+            // Copy and Submit functionality
+            copySubmitBtn.addEventListener('click', () => {
+                const submissionText = generateSubmissionText();
+                const adminWhatsAppNumber = '8801614775866';
+                const whatsappLink = `https://wa.me/${adminWhatsAppNumber}?text=${encodeURIComponent(submissionText)}`;
+
+                // Copy the text to clipboard
+                navigator.clipboard.writeText(submissionText).then(() => {
+                    alert('আপনার কাজের তথ্য কপি করা হয়েছে! এখন WhatsApp এ গিয়ে এডমিনকে পাঠান।');
+                    window.open(whatsappLink, '_blank'); // Open WhatsApp in a new tab
+                }).catch(err => {
+                    console.error('Failed to copy text: ', err);
+                    alert('কপি করতে সমস্যা হয়েছে। অনুগ্রহ করে ম্যানুয়ালি কপি করুন এবং WhatsApp এ পাঠান।');
+                    window.open(whatsappLink, '_blank'); // Still try to open WhatsApp
                 });
             });
         });
-
-        // Modal Functions
-        function openModal(modal) {
-            modal.classList.add('show');
-            document.getElementById(modal.id + '-backdrop').classList.add('show');
-        }
-        function closeModal(modal) {
-            modal.classList.remove('show');
-            document.getElementById(modal.id + '-backdrop').classList.remove('show');
-        }
-
-        // Event Listeners for Opening Modals
-        submitButtons.forEach(button => {
-            button.addEventListener('click', (e) => {
-                if (button.disabled) return;
-                const taskTitle = button.getAttribute('data-task-title');
-                const taskReward = button.getAttribute('data-task-reward');
-                submissionModalTitle.textContent = `"${taskTitle}" কাজটি জমা দিন`;
-                document.getElementById('task-title-input').value = taskTitle;
-                document.getElementById('task-reward-input').value = taskReward;
-                openModal(submissionModal);
-            });
-        });
-
-        historyBtn.addEventListener('click', () => {
-            renderHistory();
-            openModal(historyModal);
-        });
-
-        noticeBtn.addEventListener('click', () => {
-            openModal(noticeModal);
-        });
-
-        // Event Listeners for Closing Modals
-        closeButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                const targetModal = document.getElementById(button.getAttribute('data-target'));
-                closeModal(targetModal);
-            });
-        });
-
-        modalBackdrops.forEach(backdrop => {
-            backdrop.addEventListener('click', () => {
-                const targetModal = document.getElementById(backdrop.id.replace('-backdrop', ''));
-                closeModal(targetModal);
-            });
-        });
-
-        // Form Submission
-        submissionForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const userId = document.getElementById('user-id').value;
-            const details = document.getElementById('details').value;
-            const taskTitle = document.getElementById('task-title-input').value;
-            const taskReward = document.getElementById('task-reward-input').value;
-            const whatsappNumber = "8801614775866"; // Admin WhatsApp number
-
-            if (!userId) {
-                alert('অনুগ্রহ করে আপনার ইউজার আইডি/ইমেইল দিন।');
-                return;
-            }
-
-            let message = `*নতুন জব সাবমিশন*\n\n`;
-            message += `*কাজের নাম:* ${taskTitle}\n`;
-            message += `*রিওয়ার্ড:* ৳${taskReward}\n`;
-            message += `*ইউজার আইডি/ইমেইল:* ${userId}\n`;
-            if (details) message += `*বিস্তারিত:* ${details}\n\n`;
-            message += `আমি কাজটি সম্পন্ন করেছি। অনুগ্রহ করে আমার স্ক্রিনশটগুলো যাচাই করুন।`;
-
-            const encodedMessage = encodeURIComponent(message);
-            const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodedMessage}`;
-            
-            saveToHistory(taskTitle, taskReward);
-            
-            window.open(whatsappUrl, '_blank');
-            closeModal(submissionModal);
-            submissionForm.reset();
-        });
-
-        // History Management
-        function saveToHistory(title, reward) {
-            let history = JSON.parse(localStorage.getItem('taskHistory')) || [];
-            const newEntry = { 
-                title, 
-                reward, 
-                date: new Date().toLocaleString('bn-BD', { day: 'numeric', month: 'long', hour: 'numeric', minute: 'numeric', hour12: true }) 
-            };
-            history.push(newEntry);
-            localStorage.setItem('taskHistory', JSON.stringify(history));
-        }
-
-        function renderHistory() {
-            let history = JSON.parse(localStorage.getItem('taskHistory')) || [];
-            historyList.innerHTML = '';
-
-            if (history.length === 0) {
-                historyList.innerHTML = '<p style="text-align: center; color: var(--text-light);">আপনি এখনো কোনো কাজ জমা দেননি।</p>';
-                return;
-            }
-
-            history.reverse().forEach(item => {
-                const li = document.createElement('li');
-                li.innerHTML = `
-                    <span class="history-title">${item.title}</span>
-                    <div class="history-details">
-                        <span>${item.date}</span>
-                        <strong>৳${item.reward}</strong>
-                    </div>
-                `;
-                historyList.appendChild(li);
-            });
-        }
-    });
     </script>
 </body>
 </html>
